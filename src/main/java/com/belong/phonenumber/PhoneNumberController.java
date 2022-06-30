@@ -8,11 +8,14 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static java.lang.Integer.parseInt;
 import static org.apache.commons.lang3.StringUtils.isNumeric;
 
 @RestController
 public class PhoneNumberController {
 
+    public static final int DEFAULT_LIMIT = 10;
+    public static final int DEFAULT_SKIP = 0;
     private final PhoneNumberService phoneNumberService;
 
     public PhoneNumberController(PhoneNumberService phoneNumberService) {
@@ -39,10 +42,10 @@ public class PhoneNumberController {
     }
 
     private int getValidLimit(String limit) {
-        return limit == null ? 10 : Integer.valueOf(limit);
+        return limit == null ? DEFAULT_LIMIT : parseInt(limit);
     }
 
     private int getValidSkip(String skip) {
-        return skip == null ? 0 : Integer.valueOf(skip);
+        return skip == null ? DEFAULT_SKIP : parseInt(skip);
     }
 }

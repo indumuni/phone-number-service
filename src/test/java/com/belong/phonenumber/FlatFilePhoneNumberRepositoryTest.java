@@ -2,6 +2,7 @@ package com.belong.phonenumber;
 
 import com.belong.phonenumber.dto.PhoneNumberDTO;
 import com.belong.phonenumber.dto.SearchFilterDTO;
+import com.belong.phonenumber.exception.PhoneNumberNotFound;
 import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,9 +34,8 @@ public class FlatFilePhoneNumberRepositoryTest {
 
     @Test
     public void shouldRequireValidSearchFilter() {
-        Exception exception = assertThrows(RuntimeException.class, () -> {
-            phoneNumberRepository.findPhoneNumbers(null);
-        });
+        Exception exception = assertThrows(RuntimeException.class,
+                () -> phoneNumberRepository.findPhoneNumbers(null));
         assertThat(exception.getMessage(), is("Invalid search filter"));
         assertThat(exception.getClass(), is(IllegalArgumentException.class));
     }
@@ -113,10 +113,8 @@ public class FlatFilePhoneNumberRepositoryTest {
 
     @Test
     public void shouldStatusUpdateOnInvalidPhoneNumberShouldFail() {
-        Exception exception = assertThrows(PhoneNumberNotFound.class, () -> {
-            phoneNumberRepository.changeStatus("id-that-does-not-exist", true);
-
-        });
+        Exception exception = assertThrows(PhoneNumberNotFound.class,
+                () -> phoneNumberRepository.changeStatus("id-that-does-not-exist", true));
         assertThat(exception.getMessage(), is("Invalid phone number"));
         assertThat(exception.getClass(), is(PhoneNumberNotFound.class));
     }

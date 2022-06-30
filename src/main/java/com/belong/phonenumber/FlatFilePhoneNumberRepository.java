@@ -2,6 +2,7 @@ package com.belong.phonenumber;
 
 import com.belong.phonenumber.dto.PhoneNumberDTO;
 import com.belong.phonenumber.dto.SearchFilterDTO;
+import com.belong.phonenumber.exception.PhoneNumberNotFound;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
@@ -23,7 +24,7 @@ public class FlatFilePhoneNumberRepository implements PhoneNumberRepository {
     private final Map<String, PhoneNumberDTO> phoneNumbersIndex;
 
     public FlatFilePhoneNumberRepository() {
-        Class clazz = FlatFilePhoneNumberRepository.class;
+        Class<FlatFilePhoneNumberRepository> clazz = FlatFilePhoneNumberRepository.class;
         InputStream inputStream = clazz.getResourceAsStream("/FlatFilePhoneNumberRepository.txt");
         try {
             this.phoneNumbers = FlatFilePhoneNumberRepository.transformToPhoneNumbers(inputStream);
@@ -68,11 +69,11 @@ public class FlatFilePhoneNumberRepository implements PhoneNumberRepository {
 
     private int validEndIndex(int startIndex, int limit, int filtered) {
         int endIndex = startIndex + limit;
-        return endIndex < filtered ? endIndex : filtered;
+        return Math.min(endIndex, filtered);
     }
 
     private int validStartIndex(int filter, int filtered) {
-        return filter < filtered ? filter : filtered;
+        return Math.min(filter, filtered);
     }
 
     List<PhoneNumberDTO> phoneNumbers() {

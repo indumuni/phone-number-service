@@ -3,6 +3,7 @@ package com.belong.phonenumber;
 import com.belong.phonenumber.dto.PhoneNumberDTO;
 import com.belong.phonenumber.dto.SearchFilterDTO;
 import com.belong.phonenumber.dto.SearchResultsDTO;
+import com.belong.phonenumber.exception.PhoneNumberNotFound;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -48,7 +49,7 @@ public class PhoneNumberControllerTest {
 
         mvc.perform(get("/PhoneNumbers").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.results[*].id").value(containsInAnyOrder("aaa", "bbb")))
+                .andExpect(jsonPath("$.results[*].id").value(containsInAnyOrder("p14423", "p24423")))
                 .andExpect(jsonPath("$.results.length()").value(2));
     }
 
@@ -129,14 +130,14 @@ public class PhoneNumberControllerTest {
         mvc.perform(put("/PhoneNumbers/1111AAA/status").contentType(MediaType.APPLICATION_JSON)
                         .content("{ \"active\":true }")
                 )
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isNotFound())
                 .andExpect(content().string(equalTo("Invalid phone number")));
     }
 
     private SearchResultsDTO mockResult() {
         return new SearchResultsDTO(List.of(
-                new PhoneNumberDTO("aaa", "045556666", true, "c111"),
-                new PhoneNumberDTO("bbb", "04555666t", true, "c111")
+                new PhoneNumberDTO("p14423", "045556666", true, "c111"),
+                new PhoneNumberDTO("p24423", "04555666t", true, "c111")
         ));
     }
 }

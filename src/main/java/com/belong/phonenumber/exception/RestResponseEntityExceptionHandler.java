@@ -1,4 +1,4 @@
-package com.belong.phonenumber;
+package com.belong.phonenumber.exception;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -21,6 +21,6 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
     protected ResponseEntity<Object> handleInvalidPhoneNumber(
             PhoneNumberNotFound ex, WebRequest request) {
         return handleExceptionInternal(ex, ex.getMessage(),
-                new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
+                new HttpHeaders(), HttpStatus.NOT_FOUND, request);
     }
 }
