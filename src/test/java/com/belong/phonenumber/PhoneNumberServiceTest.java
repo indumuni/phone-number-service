@@ -15,6 +15,8 @@ import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -53,11 +55,38 @@ public class PhoneNumberServiceTest {
     }
 
     @Test
+    public void shouldSkipAlwaysPositive() {
+
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> phoneNumberService.allPhoneNumbers(new SearchFilterDTO(-1, 50 , "c122")));
+        assertThat(exception.getMessage(), is("Invalid skip"));
+        assertThat(exception.getClass(), is(IllegalArgumentException.class));
+    }
+
+    @Test
+    public void shouldLimitAlwaysPositive() {
+
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> phoneNumberService.allPhoneNumbers(new SearchFilterDTO(1, -1 , "c122")));
+        assertThat(exception.getMessage(), is("Invalid limit"));
+        assertThat(exception.getClass(), is(IllegalArgumentException.class));
+    }
+
+    @Test
+    public void shouldLimitLessThanOrEqual50() {
+
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> phoneNumberService.allPhoneNumbers(new SearchFilterDTO(1, 51 , "c122")));
+        assertThat(exception.getMessage(), is("Invalid limit"));
+        assertThat(exception.getClass(), is(IllegalArgumentException.class));
+    }
+
+    @Test
     public void shouldCreateSearchResultFromPhoneNumbers() {
 
         when(mockPhoneNumberRepository.findPhoneNumbers(any())).thenReturn(List.of(new PhoneNumberDTO("eee", "04", false, "c1112")));
 
-        SearchResultsDTO searchResults = phoneNumberService.allPhoneNumbers(any());
+        SearchResultsDTO searchResults = phoneNumberService.allPhoneNumbers(new SearchFilterDTO(0,10, "c1112"));
         assertThat(searchResults.results.size(), equalTo(1));
         assertThat(searchResults.results.get(0).customerId, equalTo("c1112"));
     }
@@ -71,6 +100,5 @@ public class PhoneNumberServiceTest {
         verify(mockPhoneNumberRepository).changeStatus(capturePhoneNumber.capture(), capturePhoneNumberStatus.capture());
         assertThat(capturePhoneNumber.getValue(), equalTo("some-phone-number"));
         assertThat(capturePhoneNumberStatus.getValue(), equalTo(false));
-
     }
 }
